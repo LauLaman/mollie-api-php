@@ -22,7 +22,8 @@ class WalletEndpoint extends EndpointAbstract
             self::REST_CREATE,
             'wallets/applepay/sessions',
             $this->parseRequestBody([
-
+                'domain'=> $domain,
+                'validationUrl' => $validationUrl,
             ])
         );
 
