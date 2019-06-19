@@ -8,7 +8,7 @@ use Mollie\Api\Resources\Customer;
 use Mollie\Api\Resources\Subscription;
 use Mollie\Api\Resources\SubscriptionCollection;
 
-class SubscriptionEndpoint extends EndpointAbstract
+class SubscriptionEndpoint extends CollectionEndpointAbstract
 {
     protected $resourcePath = "customers_subscriptions";
 
@@ -26,7 +26,7 @@ class SubscriptionEndpoint extends EndpointAbstract
      * Get the collection object that is used by this API endpoint. Every API endpoint uses one type of collection object.
      *
      * @param int $count
-     * @param object[] $_links
+     * @param \stdClass $_links
      *
      * @return SubscriptionCollection
      */

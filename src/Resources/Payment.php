@@ -32,14 +32,14 @@ class Payment extends BaseResource
     /**
      * Amount object containing the value and currency
      *
-     * @var object
+     * @var \stdClass
      */
     public $amount;
 
     /**
      * The amount that has been settled containing the value and currency
      *
-     * @var object
+     * @var \stdClass
      */
     public $settlementAmount;
 
@@ -47,7 +47,7 @@ class Payment extends BaseResource
      * The amount of the payment that has been refunded to the consumer, in EURO with
      * 2 decimals. This field will be null if the payment can not be refunded.
      *
-     * @var object|null
+     * @var \stdClass|null
      */
     public $amountRefunded;
 
@@ -59,7 +59,7 @@ class Payment extends BaseResource
      * This is possible to reimburse the costs for a return shipment to your customer
      * for example.
      *
-     * @var object|null
+     * @var \stdClass|null
      */
     public $amountRemaining;
 
@@ -197,7 +197,7 @@ class Payment extends BaseResource
      * During creation of the payment you can set custom metadata that is stored with
      * the payment, and given back whenever you retrieve that payment.
      *
-     * @var object|mixed|null
+     * @var \stdClass|mixed|null
      */
     public $metadata;
 
@@ -205,14 +205,19 @@ class Payment extends BaseResource
      * Details of a successfully paid payment are set here. For example, the iDEAL
      * payment method will set $details->consumerName and $details->consumerAccount.
      *
-     * @var object
+     * @var \stdClass
      */
     public $details;
 
     /**
-     * @var object[]
+     * @var \stdClass
      */
     public $_links;
+
+    /**
+     * @var \stdClass[]
+     */
+    public $_embedded;
 
     /**
      * Whether or not this payment can be canceled.
@@ -412,20 +417,12 @@ class Payment extends BaseResource
             $this->_links->refunds->href
         );
 
-        $resourceCollection = new RefundCollection(
+        return ResourceFactory::createCursorResourceCollection(
             $this->client,
-            $result->count,
+            $result->_embedded->refunds,
+            Refund::class,
             $result->_links
         );
-
-        foreach ($result->_embedded->refunds as $dataResult) {
-            $resourceCollection[] = ResourceFactory::createFromApiResult(
-                $dataResult,
-                new Refund($this->client)
-            );
-        }
-
-        return $resourceCollection;
     }
 
     /**
@@ -456,20 +453,12 @@ class Payment extends BaseResource
             $this->_links->captures->href
         );
 
-        $resourceCollection = new CaptureCollection(
+        return ResourceFactory::createCursorResourceCollection(
             $this->client,
-            $result->count,
+            $result->_embedded->captures,
+            Capture::class,
             $result->_links
         );
-
-        foreach ($result->_embedded->captures as $dataResult) {
-            $resourceCollection[] = ResourceFactory::createFromApiResult(
-                $dataResult,
-                new Capture($this->client)
-            );
-        }
-
-        return $resourceCollection;
     }
 
     /**
@@ -496,7 +485,7 @@ class Payment extends BaseResource
     public function chargebacks()
     {
         if (!isset($this->_links->chargebacks->href)) {
-            return new ChargebackCollection(0, null);
+            return new ChargebackCollection($this->client, 0, null);
         }
 
         $result = $this->client->performHttpCallToFullUrl(
@@ -504,20 +493,12 @@ class Payment extends BaseResource
             $this->_links->chargebacks->href
         );
 
-        $resourceCollection = new ChargebackCollection(
+        return ResourceFactory::createCursorResourceCollection(
             $this->client,
-            $result->count,
+            $result->_embedded->chargebacks,
+            Chargeback::class,
             $result->_links
         );
-
-        foreach ($result->_embedded->chargebacks as $dataResult) {
-            $resourceCollection[] = ResourceFactory::createFromApiResult(
-                $dataResult,
-                new Chargeback($this->client)
-            );
-        }
-
-        return $resourceCollection;
     }
 
     /**

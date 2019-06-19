@@ -6,7 +6,7 @@ use Mollie\Api\Exceptions\ApiException;
 use Mollie\Api\Resources\Permission;
 use Mollie\Api\Resources\PermissionCollection;
 
-class PermissionEndpoint extends EndpointAbstract
+class PermissionEndpoint extends CollectionEndpointAbstract
 {
     protected $resourcePath = "permissions";
 
@@ -26,7 +26,7 @@ class PermissionEndpoint extends EndpointAbstract
      * endpoint uses one type of collection object.
      *
      * @param int $count
-     * @param object[] $_links
+     * @param \stdClass $_links
      *
      * @return PermissionCollection
      */
